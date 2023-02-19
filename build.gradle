@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+apply plugin: 'application'
+group 'uk.co.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.mapdb/mapdb
+    implementation group: 'org.mapdb', name: 'mapdb', version: '3.0.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+run {
+    args += 'first_arg'
+}
+
+task myRun(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "uk.co.example.Main"
+    args "/work/stuff/misc/sieve3/revprimes.dat", "/home/mcarey/tmp/primes3.db"
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'uk.co.example.Main'
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
+}
+
+
+
